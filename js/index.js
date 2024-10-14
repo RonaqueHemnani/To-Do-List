@@ -31,8 +31,24 @@ img.setAttribute("src", "https://icons.veryicon.com/png/o/miscellaneous/o2o-midd
 img.setAttribute("class", "img");
 btn.appendChild(img);
 
+var showbtn =document.createElement("button");
+showbtn.setAttribute("class", "showbtn");
+showbtn.setAttribute("onclick", "seentodolist()");
+inner.appendChild(showbtn);
+
+var showimg = document.createElement("img");
+showimg.setAttribute("src", "https://cdn-icons-png.flaticon.com/512/141/141947.png");
+showimg.setAttribute("class", "showimg");
+showbtn.appendChild(showimg);
+
 var ul = document.createElement("ul");
 main.appendChild(ul);
+
+var tag =document.createElement("hr");
+main.appendChild(tag);
+
+var todolist = [];
+var todoHistory = [];
 
 function AddTask(){
     paragraph.style.display ="block";
@@ -44,115 +60,70 @@ function AddTask(){
         paragraph.style.display ="none";
     }, 1000);
     } else{
+      todolist.push(input.value);
         paragraph.innerHTML = "Success!";
         paragraph.style.color = "green";
         setTimeout(function() {
         paragraph.style.display ="none";
         }, 1000);
-
-        var li = document.createElement("li");
-        li.innerHTML = input.value;
-        ul.appendChild(li);
-        li.setAttribute("id", input.value);
-
-        var div = document.createElement("div");
-        li.appendChild(div);
-
-        var editbtn =document.createElement("button");
-        editbtn.setAttribute("class", "editbtn");
-        div.appendChild(editbtn);
-
-        var btn = document.createElement("img");
-        btn.setAttribute("src", "https://icons.veryicon.com/png/o/miscellaneous/two-color-webpage-small-icon/edit-247.png");
-        btn.setAttribute("class", "btn");
-        editbtn.appendChild(btn);
-
-        var deletebtn =document.createElement("button");
-        deletebtn.setAttribute("class", "deletebtn");
-        div.appendChild(deletebtn);
-
-        var btn = document.createElement("img");
-        btn.setAttribute("src", "https://cdn-icons-png.flaticon.com/512/6861/6861362.png");
-        btn.setAttribute("class", "btn");
-        deletebtn.appendChild(btn);        
-
-        editbtn.addEventListener("click", function() {
-            const swalWithBootstrapButtons = Swal.mixin({
-                customClass: {
-                  confirmButton: "btn btn-success",
-                  cancelButton: "btn btn-danger"
-                },
-                buttonsStyling: false
-              });
-              swalWithBootstrapButtons.fire({
-                title: "Are you sure?",
-                text: "You won't be able to revert this!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonText: "Yes, Edit it!",
-                cancelButtonText: "No, Edit!",
-                reverseButtons: true
-              }).then((result) => {
-                if (result.isConfirmed) {
-                var valueupd = prompt("Update-ToDoList" ,li.id);
-                li.innerHTML = valueupd;
-                li.id = valueupd;
-                li.appendChild(div);
-                div.appendChild(editbtn);
-                div.appendChild(deletebtn);
-                  swalWithBootstrapButtons.fire({
-                    title: "Edit!",
-                    text: "Your file has been Edit.",
-                    icon: "success"
-                  });
-                } else if (
-                  /* Read more about handling dismissals below */
-                  result.dismiss === Swal.DismissReason.cancel
-                ) {
-                  swalWithBootstrapButtons.fire({
-                    title: "Cancelled",
-                    text: "Your imaginary file is safe :)",
-                    icon: "error"
-                  });
-                }
-              });
-        });
-        deletebtn.addEventListener("click", function() {
-            const swalWithBootstrapButtons = Swal.mixin({
-                customClass: {
-                  confirmButton: "btn btn-success",
-                  cancelButton: "btn btn-danger"
-                },
-                buttonsStyling: false
-              });
-              swalWithBootstrapButtons.fire({
-                title: "Are you sure?",
-                text: "You won't be able to revert this!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonText: "Yes, delete it!",
-                cancelButtonText: "No, cancel!",
-                reverseButtons: true
-              }).then((result) => {
-                if (result.isConfirmed) {
-                    li.remove();
-                  swalWithBootstrapButtons.fire({
-                    title: "Deleted!",
-                    text: "Your file has been deleted.",
-                    icon: "success"
-                  });
-                } else if (
-                  /* Read more about handling dismissals below */
-                  result.dismiss === Swal.DismissReason.cancel
-                ) {
-                  swalWithBootstrapButtons.fire({
-                    title: "Cancelled",
-                    text: "Your imaginary file is safe :)",
-                    icon: "error"
-                  });
-                }
-            });
-        });
         input.value = "";
     }
+}
+
+function seentodolist(){
+  ul.innerHTML = "";
+  if(todolist.length === 0){
+    alert("fill the to do list!");
+  } else{
+    for(var i = 0; i < todolist.length; i++){
+      var li = document.createElement("li");
+      li.innerHTML = todolist[i];
+      ul.appendChild(li);
+
+      var div = document.createElement("div");
+      li.appendChild(div);
+
+      var editbtn =document.createElement("button");
+      editbtn.setAttribute("class", "editbtn");
+      editbtn.setAttribute("onclick", `editlist(${i})`);
+      div.appendChild(editbtn);
+
+      var btn = document.createElement("img");
+      btn.setAttribute("src", "https://icons.veryicon.com/png/o/miscellaneous/two-color-webpage-small-icon/edit-247.png");
+      btn.setAttribute("class", "btn");
+      editbtn.appendChild(btn);
+
+      var deletebtn =document.createElement("button");
+      deletebtn.setAttribute("class", "deletebtn");
+      deletebtn.setAttribute("onclick", `deletelist(${i})`);
+      div.appendChild(deletebtn);
+
+      var btn = document.createElement("img");
+      btn.setAttribute("src", "https://cdn-icons-png.flaticon.com/512/6861/6861362.png");
+      btn.setAttribute("class", "btn");
+      deletebtn.appendChild(btn);
+    }
+  }
+}
+
+function editlist(i){
+  var UpdateTodoList = prompt("update Todo", todolist[i]);
+  todolist[i] = UpdateTodoList;
+  seentodolist();
+}
+
+function deletelist(i){
+  todoHistory.push(todolist[i]);
+  checkhistory(i);
+  todolist.splice(i, 1);
+  seentodolist();
+}
+
+var order = document.createElement("ul");
+main.appendChild(order);
+
+function checkhistory(i){
+  var list = document.createElement("li");
+  list.innerHTML = todolist[i];
+  order.appendChild(list);
 }

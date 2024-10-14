@@ -52,6 +52,15 @@ body{
     width: 45px;
 }
 
+.showbtn{
+    border-radius: 100%;
+    background-color: #848cff;
+}
+
+.showimg{
+    width: 44px;
+}
+
 li{
     display: flex;
     justify-content: space-between;
